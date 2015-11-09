@@ -52,7 +52,7 @@ function makeOrbiterPool(){
   obj = new Orbiter();
   orbiters.push(obj);
   }
-} //i think 100 is enough
+}
 
 makeOrbiterPool();
 
@@ -72,6 +72,7 @@ function updateOrbiters(){
     orbiters[i].x = orbiters[orbiters[i].center].x + orbiters[i].rad * Math.cos(orbiters[i].angle * Math.PI / 180);
     orbiters[i].y = orbiters[orbiters[i].center].y + orbiters[i].rad * Math.sin(orbiters[i].angle * Math.PI / 180);
     var tr = document.getElementById(i + "-row");
+    //just update the values in the table to reflect changes
     tr.cells[2].firstChild.nodeValue = orbiters[i].x.toFixed(2);
     tr.cells[3].firstChild.nodeValue = orbiters[i].y.toFixed(2);
     tr.cells[8].firstChild.nodeValue = orbiters[i].angle.toFixed(1);
@@ -81,14 +82,16 @@ function updateOrbiters(){
  }
 }
 
+//called in draw loop
 function drawOrbiter(){
  for (var i = 0; i < constants.maxObj; i++){
   if (orbiters[i].alive){
-   if (target==i) ctx.fillStyle = "rgba(0,200,0,0.5)";
+   if (target==i) ctx.fillStyle = "rgba(0,200,0,0.5)"; //selection indicator
    else ctx.fillStyle = "rgba(0,0,200,0.5)";
    ctx.beginPath();
    ctx.arc(orbiters[i].x, orbiters[i].y, 3, 0, Math.PI * 2, true);
    ctx.fill();
+   //creates the line that joins an orbiter to its center
    if (orbiters[i].center > -1 && line) {
     ctx.strokeStyle = "rgba(0,0, 200, 0.2)";
     ctx.moveTo(orbiters[i].x, orbiters[i].y);
@@ -99,6 +102,7 @@ function drawOrbiter(){
  }
 }
 
+//kills the orbiter and all dependent orbiters
 function killOrbiter(id){
  if (orbiters[id].alive){
 	 var traverser;
@@ -138,6 +142,8 @@ function killOrbiter(id){
 	}
 }
 
+
+//looks for an unused orbiter and repurposes it
 function reviveOrbiter(x, y, vel,acw,center,level,rad){
  for (var i = 0; i < constants.maxObj; i++){
   if (!orbiters[i].alive){
@@ -225,6 +231,8 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
  }
  alert("Max number of objects exceeded! Delete an orbiter first!");
 }
+//selecting a row
+var target = -1;
 
 function modify(select){
  if (target == -1){ //case 1: no current target
@@ -259,6 +267,7 @@ function hideMod(select){
  }
  document.getElementById(select + "-row").style.background = "";
 }
+//selecting a row -end
 
 function changeProperty(select, property){
 	if(property != "acw"){
@@ -311,17 +320,19 @@ function changeProperty(select, property){
  }
 }
 
+//reverse direction
 function toggleDir(select){
  orbiters[select].acw = !orbiters[select].acw;
  document.getElementById(select + "acw").previousSibling.nodeValue = orbiters[select].acw;
 }
 
+//creates a new orbiter at cursor position
 function getCursorPosition(canvas, event) {
  var rect = canvas.getBoundingClientRect();
  var x = event.clientX - rect.left;
  var y = event.clientY - rect.top;
  var dist;
- if (target > -1){
+ if (target > -1){ //append to selected orbit
  var xd = Math.abs(orbiters[target].x - x);
  var yd = Math.abs(orbiters[target].y - y);
   dist = Math.sqrt(xd*xd + yd*yd).toFixed(2);
@@ -376,6 +387,8 @@ function dbgPrintProperty (property){
  alert(print);
 }
 
+
+//render options
 var fade = true;
 var line = true;
 
@@ -390,13 +403,13 @@ function clearScreen () {
 function toggleLine () {
  line = !line;
 }
+//render options -end
 
+//logo
  ctx.fillStyle = "rgb(0,200,0)";
  ctx.fillRect(10,10,50,50);
  ctx.fillStyle = "rgba(0,0,200,0.5)";
  ctx.fillRect(40,40,50,50);
-
-var target = -1;
 /*
 
 var id = reviveOrbiter(1, true, -1, 0, 5);
@@ -416,6 +429,7 @@ id = reviveOrbiter(5, true, id, orbiters[id].level + 1, 800);
 var last = Date.now();
 var now, delta;
 
+//main drawing loop
 function looper(){
  now = Date.now();
  delta = now - last;

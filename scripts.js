@@ -81,21 +81,6 @@ function updateOrbiters(){
  }
 }
 
-function drawMovingOrbits(){
- ctx.beginPath();
- for (var i = 0; i < constants.maxObj; i++){
-  if (orbiters[i].alive && orbiters[i].level > 0){
-   if(orbiters[i].acw) var deltangle = (orbiters[i].angle * Math.PI / 180) + constants.thelta; 
-   else var deltangle = (orbiters[i].angle * Math.PI / 180) - constants.thelta;
-   
- if (i > 0) ctx.moveTo(orbiters[i].x, orbiters[i].y);
-
-  ctx.arc(orbiters[orbiters[i].center].x, orbiters[orbiters[i].center].y, orbiters[i].rad,  orbiters[i].angle * Math.PI / 180, deltangle, !orbiters[i].acw);
-  }
- }
- ctx.stroke();
-}
-
 function drawOrbiter(){
  for (var i = 0; i < constants.maxObj; i++){
   if (orbiters[i].alive){
@@ -104,12 +89,12 @@ function drawOrbiter(){
    ctx.beginPath();
    ctx.arc(orbiters[i].x, orbiters[i].y, 3, 0, Math.PI * 2, true);
    ctx.fill();
-   if (orbiters[i].center > -1) {
+   if (orbiters[i].center > -1 && line) {
     ctx.strokeStyle = "rgba(0,0, 200, 0.2)";
     ctx.moveTo(orbiters[i].x, orbiters[i].y);
     ctx.lineTo(orbiters[orbiters[i].center].x, orbiters[orbiters[i].center].y);
+    ctx.stroke();
    }
-   ctx.stroke();
   }
  }
 }
@@ -186,7 +171,7 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
 	    insert = row.insertCell(-1);
 	    insert.appendChild(document.createTextNode(obj[j]));
 	    insert.firstChild.id = i + j + "-c";
-     if (j == "center" || j == "rad" || j == "vel"){
+     if (j == "rad" || j == "vel"){
 		    insert.appendChild(document.createElement("INPUT"));
 		    insert.lastChild.id = i + j;
 		    insert.lastChild.type = "text";
@@ -258,7 +243,7 @@ function modify(select){
 }
 
 function showMod(select){
- var modList = ["center", "rad", "vel", "acw"];
+ var modList = ["rad", "vel", "acw"];
  for (var i = 0; i < modList.length; i++){
   document.getElementById(select + modList[i]).style.display = "inline";
   document.getElementById(select + modList[i]).value = orbiters[select][modList[i]];
@@ -267,7 +252,7 @@ function showMod(select){
 }
 
 function hideMod(select){
- var modList = ["center", "rad", "vel", "acw"];
+ var modList = ["rad", "vel", "acw"];
  for (var i = 0; i < modList.length; i++){
  document.getElementById(select + modList[i]).style.display = "none";
  changeProperty(select, modList[i]);
@@ -280,7 +265,7 @@ function changeProperty(select, property){
 	 var input = document.getElementById(select + property);
 	 var pass = true;
 	 
-	 if (property == "center" && orbiters[select].center != input.value) {
+	 /*if (property == "center" && orbiters[select].center != input.value) {
 	  if (orbiters[select].level > 0){
 		  if (input.value > -1 && input.value < constants.maxObj) {
 		   if (orbiters[input.value].alive){
@@ -294,7 +279,7 @@ function changeProperty(select, property){
 		   pass = false;
 		  }
 		 }
-	 }
+	 }*/
 	 
 	 if (property == "rad") {
 	  if (input.value < 0) {
@@ -317,13 +302,11 @@ function changeProperty(select, property){
 	 }
 	 
 	 if (pass){
-		 if (property == "center" && orbiters[select].center != input.value) {
+		 /*if (property == "center" && orbiters[select].center != input.value) {
 		 adjustLevels(select, input.value); 
-		 }
-	  else {
+		 }*/
 	  orbiters[select][property] = input.value; 
 	  input.previousSibling.nodeValue = input.value;
-	  }
 	 }
  }
 }
@@ -393,11 +376,20 @@ function dbgPrintProperty (property){
  alert(print);
 }
 
-function setFade () {}
+var fade = true;
+var line = true;
 
-function setDraw () {}
+function toggleFade () {
+ fade = !fade;
+}
 
-function toggleLine () {}
+function clearScreen () {
+ ctx.clearRect(0,0,canvas.width, canvas.height)
+}
+
+function toggleLine () {
+ line = !line;
+}
 
  ctx.fillStyle = "rgb(0,200,0)";
  ctx.fillRect(10,10,50,50);
@@ -430,11 +422,9 @@ function looper(){
  if (delta > constants.frametime){
   last = Date.now(); 
   updateOrbiters();
-  //ctx.clearRect(0,0,800,800);
   ctx.fillStyle = "rgba(255,255,255, 0.1)";
-  ctx.fillRect(0,0,800,800);
+  if (fade) ctx.fillRect(0,0,canvas.width,canvas.height);
   drawOrbiter();
-  //drawMovingOrbits();
  }
 }
 

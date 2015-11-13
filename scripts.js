@@ -76,7 +76,6 @@ function updateOrbiters(){
     tr.cells[2].firstChild.nodeValue = orbiters[i].x.toFixed(2);
     tr.cells[3].firstChild.nodeValue = orbiters[i].y.toFixed(2);
     tr.cells[8].firstChild.nodeValue = orbiters[i].angle.toFixed(1);
-    //alert("x: " + orbiters[i].x +  "y: " + orbiters[i].y + "a: " + orbiters[i].angle);
     }
   }
  }
@@ -86,7 +85,7 @@ function updateOrbiters(){
 function drawOrbiter(){
  for (var i = 0; i < constants.maxObj; i++){
   if (orbiters[i].alive){
-   if (target==i) ctx.fillStyle = "rgba(0,200,0,0.5)"; //selection indicator
+   if (targetrow == i) ctx.fillStyle = "rgba(0,200,0,0.5)"; //selection indicator
    else ctx.fillStyle = "rgba(0,0,200,0.5)";
    ctx.beginPath();
    ctx.arc(orbiters[i].x, orbiters[i].y, 3, 0, Math.PI * 2, true);
@@ -135,8 +134,7 @@ function killOrbiter(id){
    document.getElementById("orbiters").deleteRow(document.getElementById(traverser + "-row").rowIndex-1);
    //maybe i should get jquery...
 		}
-		target = -1;
-		
+		targetrow = -1;
 	} else {
 	 alert("What is dead may never die. Unable to kill because Orbiter ID[" + id + "] is not alive.");
 	}
@@ -164,7 +162,6 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
 	  } else {
 	   orbiters[i].angle = 0;
 	  }
-   
    
    var table = document.getElementById("orbiters");
    var row = table.insertRow(-1);
@@ -201,22 +198,14 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
     }
    }
    insert = row.insertCell(-1); //for Options
+   
    row.addEventListener("click", function(event) {
     var select = i;
     var arr = [].slice.call(this.children);
     if (arr.indexOf(event.target) > -1) modify(select);
    }, false);
-   var btn;/*
-   btn = document.createElement("BUTTON");
-   btn.addEventListener("click", function() {
-    var select = i;
-    modify(select);
-   }, false);
-   btn.id = i + "-btnmod";
-   btn.className = "btn btn-sm btn-default";
-   btn.appendChild(document.createTextNode("Modify"));
-   insert.appendChild(btn);
-   */
+
+   var btn;
    btn = document.createElement("BUTTON");
    btn.addEventListener("click", function() {
     var select = i;
@@ -232,19 +221,19 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
  alert("Max number of objects exceeded! Delete an orbiter first!");
 }
 //selecting a row
-var target = -1;
+var targetrow = -1;
 
 function modify(select){
- if (target == -1){ //case 1: no current target
-  target = select;
+ if (targetrow == -1){ //case 1: no current targetrow
+  targetrow = select;
   showMod(select);
  } else {
-  if (target == select){ //case 2: selection is already targeted
-  target = -1;
+  if (targetrow == select){ //case 2: selection is already targetrowed
+  targetrow = -1;
   hideMod(select);
   } else { //case 3: currently selected different from previously selected
-  hideMod(target);
-  target = select;
+  hideMod(targetrow);
+  targetrow = select;
   showMod(select);
   }
  }
@@ -263,32 +252,16 @@ function hideMod(select){
  var modList = ["rad", "vel", "acw"];
  for (var i = 0; i < modList.length; i++){
  document.getElementById(select + modList[i]).style.display = "none";
- changeProperty(select, modList[i]);
+ if (modList[i] != "acw") changeProperty(select, modList[i]);
  }
  document.getElementById(select + "-row").style.background = "";
 }
 //selecting a row -end
 
+//changes the property in the orbiters object and reflects changes to the table interface
 function changeProperty(select, property){
-	if(property != "acw"){
 	 var input = document.getElementById(select + property);
 	 var pass = true;
-	 
-	 /*if (property == "center" && orbiters[select].center != input.value) {
-	  if (orbiters[select].level > 0){
-		  if (input.value > -1 && input.value < constants.maxObj) {
-		   if (orbiters[input.value].alive){
-		   }
-		    else {
-		    alert("Cannot assign to a non-existant orbiter");
-		    pass = false;
-		   }
-		  } else {
-		   alert("Invalid center id: select from 0 to " + constants.maxObj);
-		   pass = false;
-		  }
-		 }
-	 }*/
 	 
 	 if (property == "rad") {
 	  if (input.value < 0) {
@@ -304,20 +277,16 @@ function changeProperty(select, property){
 	  if (input.value < 0){
 	   alert("No negative velocities allowed (in this app). Try reversing the direction instead");
 	   pass = false;
-	  } else if (input.value > 359){
+	  } else if (input.value > 10){
 	   alert("Too fast! Velocity unchanged.");
 	   pass = false;
 	  }
 	 }
 	 
 	 if (pass){
-		 /*if (property == "center" && orbiters[select].center != input.value) {
-		 adjustLevels(select, input.value); 
-		 }*/
 	  orbiters[select][property] = input.value; 
 	  input.previousSibling.nodeValue = input.value;
 	 }
- }
 }
 
 //reverse direction
@@ -332,16 +301,17 @@ function getCursorPosition(canvas, event) {
  var x = event.clientX - rect.left;
  var y = event.clientY - rect.top;
  var dist;
- if (target > -1){ //append to selected orbit
- var xd = Math.abs(orbiters[target].x - x);
- var yd = Math.abs(orbiters[target].y - y);
+ if (targetrow > -1){ //append to selected orbit
+ var xd = Math.abs(orbiters[targetrow].x - x);
+ var yd = Math.abs(orbiters[targetrow].y - y);
   dist = Math.sqrt(xd*xd + yd*yd).toFixed(2);
-  reviveOrbiter(x,y,2, true, target, orbiters[target].level + 1, dist);
+  reviveOrbiter(x,y,2, true, targetrow, orbiters[targetrow].level + 1, dist);
  } else {
   reviveOrbiter(x,y,1, true, -1, 0, 50);
  }
 }
 
+/*
 function adjustLevels(id, destination){
  if (orbiters[id].alive){
 	 var traverser;
@@ -378,6 +348,7 @@ function adjustLevels(id, destination){
 	} else {
 	}
 }
+*/
 
 function dbgPrintProperty (property){
  var print = property;
@@ -410,22 +381,7 @@ function toggleLine () {
  ctx.fillRect(10,10,50,50);
  ctx.fillStyle = "rgba(0,0,200,0.5)";
  ctx.fillRect(40,40,50,50);
-/*
 
-var id = reviveOrbiter(1, true, -1, 0, 5);
-
-reviveOrbiter(2.22, false, id, orbiters[id].level + 1, 200);
-
-id = reviveOrbiter(1.68, true, id, orbiters[id].level + 1, 80);
-
-
-id = reviveOrbiter(3.14, false, id, orbiters[id].level + 1, 130);
-
-id = reviveOrbiter(0.2, false, id, orbiters[id].level + 1, 100);
-
-id = reviveOrbiter(5, true, id, orbiters[id].level + 1, 800);
-
-*/
 var last = Date.now();
 var now, delta;
 

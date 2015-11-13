@@ -156,10 +156,10 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
 	  orbiters[i].y = y;
    
    
-   if(center > -1){
+   if(center > -1){ //assignment to an existing orbiter
     orbiters[i].angle =  Math.acos((orbiters[i].x-orbiters[center].x)/rad) * 180 / Math.PI;
-    if (orbiters[i].y < orbiters[center].y) orbiters[i].angle *= -1;
-	  } else {
+    if (orbiters[i].y < orbiters[center].y) orbiters[i].angle *= -1; //account for limitations of Math.acos
+	  } else { //unlinked orbiter
 	   orbiters[i].angle = 0;
 	  }
    
@@ -169,6 +169,7 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
    var insert = row.insertCell(-1); //for ID
    insert.innerHTML = i;
    var obj = orbiters[i];
+   //loop creates display values and input elements
    for (var j in obj){
     if (j != "alive") {
 	    insert = row.insertCell(-1);
@@ -285,6 +286,8 @@ function changeProperty(select, property){
 	 
 	 if (pass){
 	  orbiters[select][property] = Number(input.value); 
+	  
+	  //updates the value in the table
 	  input.previousSibling.nodeValue = input.value;
 	 }
 }

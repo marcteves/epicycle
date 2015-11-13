@@ -75,7 +75,7 @@ function updateOrbiters(){
     //just update the values in the table to reflect changes
     tr.cells[2].firstChild.nodeValue = orbiters[i].x.toFixed(2);
     tr.cells[3].firstChild.nodeValue = orbiters[i].y.toFixed(2);
-    tr.cells[8].firstChild.nodeValue = orbiters[i].angle.toFixed(1);
+    //tr.cells[8].firstChild.nodeValue = orbiters[i].angle.toFixed(1);
     }
   }
  }

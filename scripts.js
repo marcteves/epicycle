@@ -175,7 +175,7 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
 	    insert = row.insertCell(-1);
 	    insert.appendChild(document.createTextNode(obj[j]));
 	    insert.firstChild.id = i + j + "-c";
-     if (j == "rad" || j == "vel"){
+     if (j == "rad" || j == "vel" || j == "center"){
 		    insert.appendChild(document.createElement("INPUT"));
 		    insert.lastChild.id = i + j;
 		    insert.lastChild.type = "text";
@@ -241,7 +241,7 @@ function modify(select){
 }
 
 function showMod(select){
- var modList = ["rad", "vel", "acw"];
+ var modList = ["center", "rad", "vel", "acw"];
  for (var i = 0; i < modList.length; i++){
   document.getElementById(select + modList[i]).style.display = "inline";
   document.getElementById(select + modList[i]).value = orbiters[select][modList[i]];
@@ -250,7 +250,7 @@ function showMod(select){
 }
 
 function hideMod(select){
- var modList = ["rad", "vel", "acw"];
+ var modList = ["center", "rad", "vel", "acw"];
  for (var i = 0; i < modList.length; i++){
  document.getElementById(select + modList[i]).style.display = "none";
  if (modList[i] != "acw") changeProperty(select, modList[i]);
@@ -263,6 +263,12 @@ function hideMod(select){
 function changeProperty(select, property){
 	 var input = document.getElementById(select + property);
 	 var pass = true;
+	 
+	 if (property == "center") {
+	  if (Number(input.value) == orbiters[select].center){
+	   pass = false;
+	  }
+	 }
 	 
 	 if (property == "rad") {
 	  if (input.value < 0) {
@@ -286,7 +292,7 @@ function changeProperty(select, property){
 	 
 	 if (pass){
 	  orbiters[select][property] = Number(input.value); 
-	  
+	  if (property == "center") adjustLevels(select, Number(input.value));
 	  //updates the value in the table
 	  input.previousSibling.nodeValue = input.value;
 	 }
@@ -314,7 +320,7 @@ function getCursorPosition(canvas, event) {
  }
 }
 
-/*
+
 function adjustLevels(id, destination){
  if (orbiters[id].alive){
 	 var traverser;
@@ -342,16 +348,14 @@ function adjustLevels(id, destination){
 
 		while (hitList.length > 0){
 		 traverser = hitList.pop();
-		 alert(traverser + " " + destination);
 		 //this level += destination - firstattached + 1
 		 orbiters[traverser].level += orbiters[destination].level - orbiters[id].level + 1;
  //document.getElementById(traverser + "level-c").nodeValue = orbiters[traverser].level;
 		}
-		dbgPrintProperty("level");
 	} else {
 	}
 }
-*/
+
 
 function dbgPrintProperty (property){
  var print = property;

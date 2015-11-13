@@ -284,7 +284,7 @@ function changeProperty(select, property){
 	 }
 	 
 	 if (pass){
-	  orbiters[select][property] = input.value; 
+	  orbiters[select][property] = Number(input.value); 
 	  input.previousSibling.nodeValue = input.value;
 	 }
 }

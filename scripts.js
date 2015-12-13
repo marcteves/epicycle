@@ -76,6 +76,7 @@ function updateOrbiters(){
     //this is a bad way to do this
     tr.cells[2].firstChild.nodeValue = orbiters[i].x.toFixed(2);
     tr.cells[3].firstChild.nodeValue = orbiters[i].y.toFixed(2);
+    tr.cells[5].firstChild.nodeValue = orbiters[i].vel.toFixed(2);
     tr.cells[8].firstChild.nodeValue = orbiters[i].angle.toFixed(1);
     }
   }
@@ -88,11 +89,15 @@ function drawOrbiter(){
   if (orbiters[i].alive){
    if (targetrow == i) ctx.fillStyle = "rgba(0,200,0,0.5)"; //selection indicator
    else ctx.fillStyle = "rgba(0,0,200,0.5)";
+   if (dots){
    ctx.beginPath();
    ctx.arc(orbiters[i].x, orbiters[i].y, 3, 0, Math.PI * 2, true);
    ctx.fill();
+   ctx.stroke();
+  }
    //creates the line that joins an orbiter to its center
    if (orbiters[i].center > -1 && line) {
+    ctx.beginPath();
     ctx.strokeStyle = "rgba(0,0, 200, 0.2)";
     ctx.moveTo(orbiters[i].x, orbiters[i].y);
     ctx.lineTo(orbiters[orbiters[i].center].x, orbiters[orbiters[i].center].y);
@@ -220,6 +225,7 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
   }
  }
  console.log("Max number of objects exceeded! Delete an orbiter first!");
+ updateOrbiters();
 }
 //selecting a row
 var targetrow = -1;
@@ -314,12 +320,16 @@ function getCursorPosition(canvas, event) {
  var xd = Math.abs(orbiters[targetrow].x - x);
  var yd = Math.abs(orbiters[targetrow].y - y);
   dist = Math.sqrt(xd*xd + yd*yd).toFixed(2);
-  reviveOrbiter(x,y,(Math.random() * 2 + 0.5), true, targetrow, orbiters[targetrow].level + 1, dist);
+  reviveOrbiter(x,y,(Math.random() * 2 + 0.8), trueOrFalse(), targetrow, orbiters[targetrow].level + 1, dist);
  } else {
-  reviveOrbiter(x,y,(Math.random() * 2 + 0.5), true, -1, 0, 50);
+  reviveOrbiter(x,y,(Math.random() * 2 + 0.8), trueOrFalse(), -1, 0, 50);
  }
+ drawOrbiter();
 }
 
+function trueOrFalse(){
+  return Math.random() < 0.5;
+}
 
 function adjustLevels(id, destination){
  if (orbiters[id].alive){
@@ -369,6 +379,17 @@ function dbgPrintProperty (property){
 //render options
 var fade = true;
 var line = true;
+var dots = true;
+var running = true;
+
+function togglePause(){
+  running = !running;
+}
+
+function toggleDots(){
+  dots = !dots;
+  drawOrbiter();
+}
 
 function toggleFade () {
  fade = !fade;
@@ -380,6 +401,7 @@ function clearScreen () {
 
 function toggleLine () {
  line = !line;
+ drawOrbiter();
 }
 //render options -end
 
@@ -394,6 +416,7 @@ var now, delta;
 
 //main drawing loop
 function looper(){
+ if (running){
  now = Date.now();
  delta = now - last;
  if (delta > constants.frametime){
@@ -402,6 +425,7 @@ function looper(){
   ctx.fillStyle = "rgba(255,255,255, 0.1)";
   if (fade) ctx.fillRect(0,0,canvas.width,canvas.height);
   drawOrbiter();
+ }
  }
 }
 

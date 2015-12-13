@@ -314,9 +314,9 @@ function getCursorPosition(canvas, event) {
  var xd = Math.abs(orbiters[targetrow].x - x);
  var yd = Math.abs(orbiters[targetrow].y - y);
   dist = Math.sqrt(xd*xd + yd*yd).toFixed(2);
-  reviveOrbiter(x,y,(Math.random * 2 + 0.5), true, targetrow, orbiters[targetrow].level + 1, dist);
+  reviveOrbiter(x,y,(Math.random() * 2 + 0.5), true, targetrow, orbiters[targetrow].level + 1, dist);
  } else {
-  reviveOrbiter(x,y,(Math.random * 2 + 0.5), true, -1, 0, 50);
+  reviveOrbiter(x,y,(Math.random() * 2 + 0.5), true, -1, 0, 50);
  }
 }
 

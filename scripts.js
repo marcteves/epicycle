@@ -13,6 +13,10 @@ window.onresize = function() {
  canvas.length = window.innerLength;
 }
 
+//
+// document.addEventListener("keypress", function (event) {
+//   toggleTable(document, )
+// }, false);
 
 canvas.addEventListener("click", function(event) {
  getCursorPosition(document.getElementById("canvas1"), event);
@@ -320,9 +324,9 @@ function getCursorPosition(canvas, event) {
  var xd = Math.abs(orbiters[targetrow].x - x);
  var yd = Math.abs(orbiters[targetrow].y - y);
   dist = Math.sqrt(xd*xd + yd*yd).toFixed(2);
-  reviveOrbiter(x,y,(Math.random() * 2 + 0.8), trueOrFalse(), targetrow, orbiters[targetrow].level + 1, dist);
+  reviveOrbiter(x,y,Number((Math.random() * 2 + 0.8).toFixed(2)), trueOrFalse(), targetrow, orbiters[targetrow].level + 1, dist);
  } else {
-  reviveOrbiter(x,y,(Math.random() * 2 + 0.8), trueOrFalse(), -1, 0, 50);
+  reviveOrbiter(x,y,Number((Math.random() * 2 + 0.8).toFixed(2)), trueOrFalse(), -1, 0, 50);
  }
  drawOrbiter();
 }

@@ -1,26 +1,31 @@
-var ctx = document.getElementById("canvas1").getContext("2d");
+//Set up default drawing colors.
+
+var ctx = $("#canvas1")[0].getContext("2d");
 var grd = ctx.createLinearGradient(0, 0, 500, 0);
 grd.addColorStop(0, "rgb(0,0,200)");
 grd.addColorStop(1, "rgb(255,255,255)");
 ctx.strokeStyle = grd;
 
-var canvas = document.getElementById("canvas1");
-canvas.width = window.innerWidth;
-canvas.length = window.innerLength;
+//Adjust size and resize canvas according to window
 
-window.onresize = function() {
- canvas.width = window.innerWidth;
- canvas.length = window.innerLength;
-}
+$("#canvas1").attr("width", $(window).attr("innerWidth"));
+$("#canvas1").attr("length", $(window).attr("innerLength"))
+
+$(window).resize(function() {
+ $("#canvas1").attr("width", $(window).attr("innerWidth"));
+ $("#canvas1").attr("length", $(window).attr("innerLength"));
+})
+
+var canvas = $("#canvas1")[0]; //so that there's not too much jquery
 
 //
 // document.addEventListener("keypress", function (event) {
 //   toggleTable(document, )
 // }, false);
 
-canvas.addEventListener("click", function(event) {
- getCursorPosition(document.getElementById("canvas1"), event);
-}, false);
+$("#canvas1").click(function(e) {
+ getCursorPosition($("#canvas1")[0], e);
+});
 
 var constants = {
  maxObj: 100,
@@ -75,9 +80,9 @@ function updateOrbiters(){
 
     orbiters[i].x = orbiters[orbiters[i].center].x + orbiters[i].rad * Math.cos(orbiters[i].angle * Math.PI / 180);
     orbiters[i].y = orbiters[orbiters[i].center].y + orbiters[i].rad * Math.sin(orbiters[i].angle * Math.PI / 180);
-    var tr = document.getElementById(i + "-row");
+    var tr = $("#" + i + "-row")[0];
     //just update the values in the table to reflect changes
-    //this is a bad way to do this
+    //this is a bad way to do this?
     tr.cells[2].firstChild.nodeValue = orbiters[i].x.toFixed(2);
     tr.cells[3].firstChild.nodeValue = orbiters[i].y.toFixed(2);
     tr.cells[5].firstChild.nodeValue = orbiters[i].vel.toFixed(2);
@@ -140,7 +145,7 @@ function killOrbiter(id){
 		while (hitList.length > 0){
 		 traverser = hitList.pop();
 		 orbiters[traverser].alive = 0;
-   document.getElementById("orbiters").deleteRow(document.getElementById(traverser + "-row").rowIndex-1);
+   $("#orbiters > #" + traverser + "-row").remove();
    //maybe i should get jquery...
 		}
 		targetrow = -1;
@@ -152,7 +157,7 @@ function killOrbiter(id){
 
 //looks for an unused orbiter and repurposes it
 function reviveOrbiter(x, y, vel,acw,center,level,rad){
- for (var i = 0; i < constants.maxObj; i++){
+ for (var i = 0; i < constants.maxObj; i++){ //search orbiter pool for an unused space
   if (!orbiters[i].alive){
    //revive with properties
     orbiters[i].center = center;
@@ -164,15 +169,14 @@ function reviveOrbiter(x, y, vel,acw,center,level,rad){
 	  orbiters[i].x = x;
 	  orbiters[i].y = y;
 
-
-   if(center > -1){ //assignment to an existing orbiter
+   if(center > -1){ //implies that it is in a deeper level; then assign to an existing orbiter
     orbiters[i].angle =  Math.acos((orbiters[i].x-orbiters[center].x)/rad) * 180 / Math.PI;
-    if (orbiters[i].y < orbiters[center].y) orbiters[i].angle *= -1; //account for limitations of Math.acos
-	  } else { //unlinked orbiter
+    if (orbiters[i].y < orbiters[center].y) orbiters[i].angle *= -1; //acos cannot handle other angles
+	  } else { //u
 	   orbiters[i].angle = 0;
 	  }
 
-   var table = document.getElementById("orbiters");
+   var table = $("#orbiters")[0];
    var row = table.insertRow(-1);
    row.id = i + "-row";
    var insert = row.insertCell(-1); //for ID
@@ -250,28 +254,29 @@ function modify(select){
  }
 }
 
+//Where "select" is the ID of the orbiter
+
 function showMod(select){
  var modList = ["center", "rad", "vel", "acw"];
  for (var i = 0; i < modList.length; i++){
-  document.getElementById(select + modList[i]).style.display = "inline";
-  document.getElementById(select + modList[i]).value = orbiters[select][modList[i]];
+  $("#" + select + modList[i]).show();
+  $("#" + select + modList[i]).val(orbiters[select][modList[i]]);
  }
- document.getElementById(select + "-row").style.background = "rgba(0,0,200,0.3)";
+ $("#" + select + "-row").css("background", "rgba(0,0,200,0.3)");
 }
 
 function hideMod(select){
  var modList = ["center", "rad", "vel", "acw"];
  for (var i = 0; i < modList.length; i++){
- document.getElementById(select + modList[i]).style.display = "none";
+  $("#" + select + modList[i]).hide();
  if (modList[i] != "acw") changeProperty(select, modList[i]);
  }
- document.getElementById(select + "-row").style.background = "";
+ $("#" + select + "-row").css("background", "rgba(255,255,255,0)");
 }
-//selecting a row -end
 
 //changes the property in the orbiters object and reflects changes to the table interface
 function changeProperty(select, property){
-	 var input = document.getElementById(select + property);
+	 var input = $("#" + select + property);
 	 var pass = true;
 
 	 if (property == "center") {
@@ -363,7 +368,9 @@ function adjustLevels(id, destination){
 		while (hitList.length > 0){
 		 traverser = hitList.pop();
 		 //this level += destination - firstattached + 1
+     console.log("FOUND IT");
 		 orbiters[traverser].level += orbiters[destination].level - orbiters[id].level + 1;
+     console.log("FOUND IT");
  //document.getElementById(traverser + "level-c").nodeValue = orbiters[traverser].level;
 		}
 	} else {

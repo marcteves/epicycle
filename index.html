@@ -5,11 +5,57 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Epicycle</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link rel="stylesheet" href="bootstrap-theme.min.css">
+  <link rel="stylesheet" href="style.css">
  </head>
  <body role = "document">
-  <canvas id = "canvas1" width = "800" height = "800" style = "border: 1px solid black"></canvas>
+  <canvas id = "canvas1" width = "800" height = "800" style = "border: 1px solid black">
+  </canvas>
+  <button id = "guidebutton" type = "button" class = "btn btn-info btn-lg" data-toggle = "modal" data-target = "#guide">Guide</button>
+  <div class = "modal fade" id = "guide" role = "dialog">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+        <div class = "modal-header">
+          <button type = "button" class = "close" data-dismiss ="modal">&times;</button>
+          <h4 class = "modal-title">Instructions</h4>
+        </div>
+        <div class = "modal-body">
+          <p>Create a stationary orbiter by clicking on the canvas while no orbiter is selected</p>
+          <p>Select an orbiter by clicking its stats at the table on the bottom.</p>
+          <p>Selected orbiters will be blue on the table and light green on the canvas</p>
+          <p>Create a moving orbiter by clicking on the cavas when an orbiter is selected.</p>
+          <p>Edit the stats of orbiters by selecting them, editing the values, and deselecting them</p>
+          <p>Delete an orbiter and all orbiters orbiting it by pressing "Kill"</p>
+        </div>
+        <div class = "modal-footer">
+          <button type = "button" class = "btn btn-default" data-dismiss = "modal">Got it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id = "eclbutton" type = "button" class = "btn btn-info btn-lg" data-toggle = "modal" data-target = "#ecl">Create Epicycloid</button>
+  <div class = "modal fade" id = "ecl" role = "dialog">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+        <div class = "modal-header">
+          <button type = "button" class = "close" data-dismiss ="modal">&times;</button>
+          <h4 class = "modal-title">Create Epicycloid</h4>
+        </div>
+        <div class = "modal-body">
+          <p>An epicycloid is a curve created by tracing the path of a point on a circle, which in turn
+          is rolling around another stationary circle</p>
+          K: <input type = "text" name = "kvalue">
+          <p>Center:</p>
+          X: <input type = "text" name = "cx" value = "650">
+          Y: <input type = "text" name = "cy" value = "350">
+        </div>
+        <div class = "modal-footer">
+          <button type = "button" class = "btn btn-default" data-dismiss = "modal" onclick="createEpicycloid();">Create it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="page-header">
    <h1>Render Options</h1>
   </div>
@@ -42,5 +88,6 @@
     </table>
   <script src = "jquery-1.12.0.min.js"></script>
   <script src="scripts.js"></script>
+  <script src="bootstrap.min.js"></script>
  </body>
 </html>

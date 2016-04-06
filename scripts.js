@@ -420,6 +420,22 @@ function toggleLine () {
 }
 //render options -end
 
+function createEpicycloid(){
+  var k = Number($("input[name=kvalue]").val());
+  console.log(isNaN(k));
+  var x = Number($("input[name=cx]").val());
+  console.log(isNaN(x));
+  var y = Number($("input[name=cy]").val());
+  var rad = Number((200/(k+1)).toFixed(2));
+  console.log(isNaN(rad));
+  //revive an orbiter at the chosen center
+  var center = reviveOrbiter(x,y,Number((Math.random() * 2 + 0.8).toFixed(2)), trueOrFalse(), -1, 0, 50);
+  //create an orbiter with velocity 1 and radius 200 orbiting center, acw
+  center = reviveOrbiter(x+200,y,1.00, true, center, 1, 200);
+  //create an orbiter with velocity k+1 and radius 200/(k+1) orbiting previous, acw
+  center = reviveOrbiter(x+200+rad,y,k + 1.00, true, center, 2, rad);
+}
+
 //logo
  ctx.fillStyle = "rgb(0,200,0)";
  ctx.fillRect(10,10,50,50);

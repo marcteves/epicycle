@@ -280,36 +280,37 @@ function changeProperty(select, property){
 	 var pass = true;
 
 	 if (property == "center") {
-	  if (Number(input.value) == orbiters[select].center){
+     console.log(input.val());
+	    if (Number(input.val()) == orbiters[select].center){
 	   pass = false;
 	  }
 	 }
 
 	 if (property == "rad") {
-	  if (input.value < 0) {
+	  if (input.val() < 0) {
 	   console.log("Radius too small. Positive numbers only.");
 	   pass = false;
-	  } else if (input.value > 100000) {
+	  } else if (input.val() > 100000) {
 	   console.log("Radius too large! Try numbers below 100000");
 	   pass = false;
 	  }
 	 }
 
 	 if (property == "vel"){
-	  if (input.value < 0){
+	  if (input.val() < 0){
 	   console.log("No negative velocities allowed (in this app). Try reversing the direction instead");
 	   pass = false;
-	  } else if (input.value > 10){
+	  } else if (input.val() > 10){
 	   console.log("Too fast! Velocity unchanged.");
 	   pass = false;
 	  }
 	 }
 
 	 if (pass){
-	  orbiters[select][property] = Number(input.value);
-	  if (property == "center") adjustLevels(select, Number(input.value));
+	  orbiters[select][property] = Number(input.val());
+	  if (property == "center") adjustLevels(select, Number(input.val()));
 	  //updates the value in the table
-	  input.previousSibling.nodeValue = input.value;
+	  input.prev().val(input.val());
 	 }
 }
 
@@ -369,6 +370,9 @@ function adjustLevels(id, destination){
 		 traverser = hitList.pop();
 		 //this level += destination - firstattached + 1
      console.log("FOUND IT");
+     console.log(orbiters[traverser].level);
+     console.log(orbiters[destination].level);
+     console.log(orbiters[id].level);
 		 orbiters[traverser].level += orbiters[destination].level - orbiters[id].level + 1;
      console.log("FOUND IT");
  //document.getElementById(traverser + "level-c").nodeValue = orbiters[traverser].level;
